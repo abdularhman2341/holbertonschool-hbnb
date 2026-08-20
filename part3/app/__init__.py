@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from config import DevelopmentConfig
 
+
 bcrypt = Bcrypt()
 jwt = JWTManager()
 db = SQLAlchemy()
@@ -23,6 +24,7 @@ def create_app(config_class=DevelopmentConfig):
     from app.api.v1.auth import auth_bp
     from app.api.v1.users import api as users_ns
     from flask_restx import Api
+    from app.api.v1.places import api as places_ns
 
     api = Api(
         app,
@@ -32,5 +34,6 @@ def create_app(config_class=DevelopmentConfig):
     )
     api.add_namespace(users_ns, path='/api/v1/users')
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
+    api.add_namespace(places_ns, path='/api/v1/places')
 
     return app
