@@ -63,6 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
             priceFilter.appendChild(option);
         });
 
+        priceFilter.value = 'All';
+
         priceFilter.addEventListener('change', (event) => {
             const selectedPrice = event.target.value;
             const placeCards =
@@ -81,6 +83,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+    }
+
+    const placeDetails = document.getElementById('place-details');
+    const addReviewSection = document.getElementById('add-review');
+
+    if (placeDetails) {
+        const placeId = getPlaceIdFromURL();
+
+        if (addReviewSection) {
+            if (token) {
+                addReviewSection.style.display = 'block';
+            } else {
+                addReviewSection.style.display = 'none';
+            }
+        }
+
+        if (placeId) {
+            fetchPlaceDetails(token, placeId);
+        }
     }
 });
 
@@ -147,4 +168,100 @@ function displayPlaces(places) {
 
         placesList.appendChild(placeCard);
     });
+}
+
+
+function getPlaceIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+
+    return params.get('id');
+}
+
+
+async function fetchPlaceDetails(token, placeId) {
+    const headers = {};
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(
+        `http://127.0.0.1:5005/api/v1/places/${placeId}`,
+        {
+            method: 'GET',
+            headers: headers
+        }
+    );
+
+    if (response.ok) {
+        const place = await response.json();
+
+        displayPlaceDetails(place);
+    } else {
+        console.error('Failed to fetch place details');
+    }
+}
+
+
+function displayPlaceDetails(place) {
+    const placeDetails = document.getElementById('place-details');
+    const reviewsSection = document.getElementById('reviews');
+
+    const host = place.owner
+        ? `${place.owner.first_name} ${place.owner.last_name}`
+        : 'Unknown';
+
+    const amenities = place.amenities.length > 0
+        ? place.amenities
+            .map((amenity) => amenity.name)
+            .join(', ')
+        : 'None';
+
+    placeDetails.innerHTML = `
+        <h1>${place.title}</h1>
+
+        <div class="place-info">
+            <p><strong>Host:</strong> ${host}</p>
+            <p>
+                <strong>Price per night:</strong>
+                $${place.price}
+            </p>
+            <p>
+                <strong>Description:</strong>
+                ${place.description || 'No description available.'}
+            </p>
+            <p>
+                <strong>Amenities:</strong>
+                ${amenities}
+            </p>
+        </div>
+    `;
+
+    reviewsSection.innerHTML = '<h2>Reviews</h2>';
+
+    if (place.reviews.length === 0) {
+        const noReviews = document.createElement('p');
+
+        noReviews.textContent = 'No reviews yet.';
+        reviewsSection.appendChild(noReviews);
+    } else {
+        place.reviews.forEach((review) => {
+            const reviewCard = document.createElement('div');
+
+            reviewCard.className = 'review-card';
+
+            reviewCard.innerHTML = `
+                <p>
+                    <strong>Comment:</strong>
+                    ${review.text}
+                </p>
+                <p>
+                    <strong>Rating:</strong>
+                    ${review.rating}/5
+                </p>
+            `;
+
+            reviewsSection.appendChild(reviewCard);
+        });
+    }
 }
