@@ -103,6 +103,38 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchPlaceDetails(token, placeId);
         }
     }
+
+    const reviewForm = document.getElementById('review-form');
+
+    if (
+        reviewForm &&
+        window.location.pathname.endsWith('add_review.html')
+    ) {
+        if (!token) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const placeId = getPlaceIdFromURL();
+
+        reviewForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const reviewText =
+                document.getElementById('review').value;
+
+            const rating =
+                Number(document.getElementById('rating').value);
+
+            await submitReview(
+                token,
+                placeId,
+                reviewText,
+                rating,
+                reviewForm
+            );
+        });
+    }
 });
 
 
@@ -263,5 +295,37 @@ function displayPlaceDetails(place) {
 
             reviewsSection.appendChild(reviewCard);
         });
+    }
+}
+
+
+async function submitReview(
+    token,
+    placeId,
+    reviewText,
+    rating,
+    reviewForm
+) {
+    const response = await fetch(
+        'http://127.0.0.1:5005/api/v1/reviews/',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                text: reviewText,
+                rating: rating,
+                place_id: placeId
+            })
+        }
+    );
+
+    if (response.ok) {
+        alert('Review submitted successfully!');
+        reviewForm.reset();
+    } else {
+        alert('Failed to submit review');
     }
 }

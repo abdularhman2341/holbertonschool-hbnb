@@ -25,6 +25,7 @@ def create_app(config_class=DevelopmentConfig):
     from app.api.v1.users import api as users_ns
     from flask_restx import Api
     from app.api.v1.places import api as places_ns
+    from app.api.v1.reviews import api as reviews_ns
 
     api = Api(
         app,
@@ -35,5 +36,6 @@ def create_app(config_class=DevelopmentConfig):
     api.add_namespace(users_ns, path='/api/v1/users')
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     api.add_namespace(places_ns, path='/api/v1/places')
+    api.add_namespace(reviews_ns, path='/api/v1/reviews')
 
     return app
