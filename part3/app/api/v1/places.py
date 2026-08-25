@@ -1,4 +1,8 @@
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_jwt_extended import (
+    get_jwt,
+    get_jwt_identity,
+    jwt_required
+)
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 
@@ -139,8 +143,10 @@ class PlaceResource(Resource):
             return {'error': 'Place not found'}, 404
 
         current_user = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
 
-        if place.owner_id != current_user:
+        if not is_admin and place.owner_id != current_user:
             return {'error': 'Unauthorized action'}, 403
 
         place_data = api.payload or {}

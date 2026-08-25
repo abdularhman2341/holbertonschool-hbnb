@@ -1,4 +1,8 @@
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_jwt_extended import (
+    get_jwt,
+    get_jwt_identity,
+    jwt_required
+)
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 
@@ -59,8 +63,10 @@ class ReviewList(Resource):
 
         existing_reviews = facade.get_reviews_by_place(place_id)
 
-        if any(review.user_id == user_id
-               for review in existing_reviews):
+        if any(
+            review.user_id == user_id
+            for review in existing_reviews
+        ):
             return {
                 'error': 'You have already reviewed this place'
             }, 400
@@ -131,8 +137,10 @@ class ReviewResource(Resource):
             return {'error': 'Review not found'}, 404
 
         current_user = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
 
-        if review.user_id != current_user:
+        if not is_admin and review.user_id != current_user:
             return {'error': 'Unauthorized action'}, 403
 
         review_data = api.payload or {}
@@ -166,8 +174,10 @@ class ReviewResource(Resource):
             return {'error': 'Review not found'}, 404
 
         current_user = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
 
-        if review.user_id != current_user:
+        if not is_admin and review.user_id != current_user:
             return {'error': 'Unauthorized action'}, 403
 
         facade.delete_review(review_id)
