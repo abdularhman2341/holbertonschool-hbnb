@@ -47,4 +47,7 @@ def create_app(config_class=DevelopmentConfig):
         path='/api/v1/amenities'
     )
 
+    with app.app_context():
+        db.create_all()
+
     return app
