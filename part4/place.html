@@ -3,45 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Place Details</title>
+    <title>HBnB - Place Details</title>
+    <link rel="icon" href="images/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="brand-link">
+                <img
+                    src="images/logo.png"
+                    alt="HBnB Logo"
+                    class="logo"
+                >
+            </a>
 
-    <header>
-    <nav>
-        <a href="index.html">
-    <img src="images/logo.png" alt="HBnB Logo" class="logo">
-</a>
-        <a href="login.html" id="login-link" class="login-button">Login</a>
-    </nav>
-</header>
+            <div class="nav-actions">
+                <a href="index.html" class="nav-link">
+                    Places
+                </a>
 
-    <main>
-        
-           <section id="place-details" class="place-details">
-    <!-- Place details will be populated dynamically -->
-</section>
-    
-     <section id="reviews">
-    <h2>Reviews</h2>
-    <!-- Reviews will be populated dynamically -->
-</section>
+                <a
+                    href="login.html"
+                    id="login-link"
+                    class="login-button"
+                >
+                    Login
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="details-page">
+        <a href="index.html" class="back-link">
+            ← Back to places
+        </a>
+
+        <section
+            id="place-details"
+            class="place-details"
+            aria-live="polite"
+        >
+            <p class="loading-message">
+                Loading place details...
+            </p>
         </section>
-        <section id="add-review">
-            <h2>Add a Review</h2>
-            <form id="review-form">
-                <label for="review-text">Review:</label>
-                <textarea id="review-text" name="review-text" required></textarea>
-                
-                <button type="submit">Submit</button>
-            </form>
+
+        <section id="reviews" class="reviews-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Guest feedback</p>
+                    <h2>Reviews</h2>
+                </div>
+            </div>
+
+            <p class="loading-message">
+                Loading reviews...
+            </p>
         </section>
+
+        <section
+            id="add-review"
+            class="add-review"
+        >
+            <div>
+                <p class="eyebrow">Stayed here?</p>
+                <h2>Share your experience</h2>
+                <p>
+                    Add a review and rating for this place.
+                </p>
+            </div>
+
+            <a
+                href="add_review.html"
+                id="add-review-link"
+                class="primary-button"
+            >
+                Add a Review
+            </a>
+        </section>
+
+        <p
+            id="place-message"
+            class="status-message"
+            aria-live="polite"
+        ></p>
     </main>
 
-    <footer>
-    <p>© 2026 HBnB. All rights reserved.</p>
-</footer>
+    <footer class="site-footer">
+        <p>© 2026 HBnB. All rights reserved.</p>
+    </footer>
 
     <script src="scripts.js"></script>
 </body>

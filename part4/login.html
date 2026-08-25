@@ -3,34 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>HBnB - Login</title>
+    <link rel="icon" href="images/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-    <nav>
-        <a href="index.html">
-    <img src="images/logo.png" alt="HBnB Logo" class="logo">
-</a>
-        <a href="login.html" class="login-button">Login</a>
-    </nav>
-</header>
-    <main>
-        <form id="login-form">
-            <h1>Login</h1>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <button type="submit">Login</button>
-        </form>
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="brand-link">
+                <img
+                    src="images/logo.png"
+                    alt="HBnB Logo"
+                    class="logo"
+                >
+            </a>
+
+            <a href="login.html" class="login-button">
+                Login
+            </a>
+        </nav>
+    </header>
+
+    <main class="form-page">
+        <section class="form-card">
+            <div class="form-heading">
+                <p class="eyebrow">Welcome back</p>
+                <h1>Login to HBnB</h1>
+                <p>
+                    Sign in to leave reviews and access
+                    authenticated features.
+                </p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="current-password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <p
+                    id="login-message"
+                    class="status-message"
+                    aria-live="polite"
+                ></p>
+
+                <button type="submit" class="primary-button">
+                    Login
+                </button>
+            </form>
+
+            <a href="index.html" class="secondary-link">
+                Back to places
+            </a>
+        </section>
     </main>
 
-    <footer>
-    <p>© 2026 HBnB. All rights reserved.</p>
-</footer>
+    <footer class="site-footer">
+        <p>© 2026 HBnB. All rights reserved.</p>
+    </footer>
 
     <script src="scripts.js"></script>
 </body>

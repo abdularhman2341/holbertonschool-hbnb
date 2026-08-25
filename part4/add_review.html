@@ -3,45 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Review</title>
+    <title>HBnB - Add Review</title>
+    <link rel="icon" href="images/icon.png">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header class="site-header">
+        <nav class="navbar">
+            <a href="index.html" class="brand-link">
+                <img
+                    src="images/logo.png"
+                    alt="HBnB Logo"
+                    class="logo"
+                >
+            </a>
 
-    <header>
-    <nav>
-        <a href="index.html">
-    <img src="images/logo.png" alt="HBnB Logo" class="logo">
-</a>
-        <a href="login.html" class="login-button">Login</a>
-    </nav>
-</header>
+            <div class="nav-actions">
+                <a href="index.html" class="nav-link">
+                    Places
+                </a>
 
-    <main>
-        <!-- Add something to idfentify the place you're reviewing -->
-         <h1>Add a Review</h1>
-        <form id="review-form">
-            <h2>Add a Review</h2>
-            <label for="review">Your Review:</label>
-            <textarea id="review" name="review" required></textarea>
-            <label for="rating">Rating:</label>
-            <select id="rating" name="rating" required>
-                <!-- Options for rating -->
-                 <option value="" disabled selected>Select a rating</option>
-                 <option value="1">1</option>
-                 <option value="2">2</option>
-                 <option value="3">3</option>
-                 <option value="4">4</option>
-                 <option value="5">5</option>
-            </select>
-            <button type="submit">Submit Review</button>
-        </form>
+                <a
+                    href="login.html"
+                    id="login-link"
+                    class="login-button"
+                >
+                    Login
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="form-page">
+        <section class="form-card review-form-card">
+            <div class="form-heading">
+                <p class="eyebrow">Your experience matters</p>
+                <h1>Add a Review</h1>
+
+                <p id="review-place-name">
+                    Tell other guests about your stay.
+                </p>
+            </div>
+
+            <form id="review-form">
+                <div class="form-group">
+                    <label for="review">Your Review</label>
+                    <textarea
+                        id="review"
+                        name="review"
+                        rows="6"
+                        placeholder="What did you like about this place?"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="rating">Rating</label>
+                    <select
+                        id="rating"
+                        name="rating"
+                        required
+                    >
+                        <option value="" disabled selected>
+                            Select a rating
+                        </option>
+                        <option value="1">1 - Poor</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="3">3 - Good</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="5">5 - Excellent</option>
+                    </select>
+                </div>
+
+                <p
+                    id="review-message"
+                    class="status-message"
+                    aria-live="polite"
+                ></p>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Submit Review
+                </button>
+            </form>
+
+            <a href="index.html" class="secondary-link">
+                Back to places
+            </a>
+        </section>
     </main>
 
-     <footer>
-    <p>© 2026 HBnB. All rights reserved.</p>
-</footer>
-
+    <footer class="site-footer">
+        <p>© 2026 HBnB. All rights reserved.</p>
+    </footer>
 
     <script src="scripts.js"></script>
 </body>
