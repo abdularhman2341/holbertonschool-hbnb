@@ -16,21 +16,44 @@ class HBnBFacade:
         self.review_repo = SQLAlchemyRepository(Review)
 
     @staticmethod
-    def _validate_user_data(user_data):
-        """Validate user payload (models have no validation of their own)."""
-        first_name = user_data.get('first_name')
-        last_name = user_data.get('last_name')
-        email = user_data.get('email')
+    def _validate_user_data(user_data, partial=False):
+        """Validate user payload."""
+        def has(field):
+            return field in user_data
 
-        if not first_name or not isinstance(first_name, str) \
-                or len(first_name) > 50:
-            raise ValueError("first_name is required (max 50 characters)")
-        if not last_name or not isinstance(last_name, str) \
-                or len(last_name) > 50:
-            raise ValueError("last_name is required (max 50 characters)")
-        if not email or not isinstance(email, str) \
-                or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
-            raise ValueError("A valid email is required")
+        if not partial or has('first_name'):
+            first_name = user_data.get('first_name')
+            if not first_name or not isinstance(first_name, str) \
+                    or len(first_name) > 50:
+                raise ValueError(
+                    "first_name is required (max 50 characters)"
+                )
+
+        if not partial or has('last_name'):
+            last_name = user_data.get('last_name')
+            if not last_name or not isinstance(last_name, str) \
+                    or len(last_name) > 50:
+                raise ValueError(
+                    "last_name is required (max 50 characters)"
+                )
+
+        if not partial or has('email'):
+            email = user_data.get('email')
+            if not email or not isinstance(email, str) \
+                    or not re.match(
+                        r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                        email
+                    ):
+                raise ValueError("A valid email is required")
+
+        if not partial or has('password'):
+            password = user_data.get('password')
+            if not password or not isinstance(password, str):
+                raise ValueError("password is required")
+
+        if has('is_admin'):
+            if not isinstance(user_data.get('is_admin'), bool):
+                raise ValueError("is_admin must be a boolean")
 
     @staticmethod
     def _validate_amenity_data(amenity_data):
@@ -106,8 +129,16 @@ class HBnBFacade:
         user = self.user_repo.get(user_id)
         if not user:
             return None
-        self._validate_user_data(user_data)
-        return self.user_repo.update(user_id, user_data)
+
+        self._validate_user_data(user_data, partial=True)
+
+        data = dict(user_data)
+        password = data.pop('password', None)
+
+        if password is not None:
+            user.hash_password(password)
+
+        return self.user_repo.update(user_id, data)
 
     # ---------------------------- Amenity ----------------------------------
     def create_amenity(self, amenity_data):

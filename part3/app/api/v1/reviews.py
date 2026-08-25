@@ -36,15 +36,36 @@ review_update_model = api.model('ReviewUpdate', {
 @api.route('/')
 class ReviewList(Resource):
     @jwt_required()
-    @api.expect(review_model)
+    @api.expect(review_model, validate=True)
     @api.response(201, 'Review successfully created')
     @api.response(400, 'Invalid input data')
     @api.response(401, 'Authentication required')
     def post(self):
         """Create a review for a place."""
         review_data = api.payload or {}
+        user_id = get_jwt_identity()
+        place_id = review_data.get('place_id')
 
-        review_data['user_id'] = get_jwt_identity()
+        place = facade.get_place(place_id)
+        if not place:
+            return {
+                'error': 'place_id does not match any existing place'
+            }, 400
+
+        if place.owner_id == user_id:
+            return {
+                'error': 'You cannot review your own place'
+            }, 400
+
+        existing_reviews = facade.get_reviews_by_place(place_id)
+
+        if any(review.user_id == user_id
+               for review in existing_reviews):
+            return {
+                'error': 'You have already reviewed this place'
+            }, 400
+
+        review_data['user_id'] = user_id
 
         try:
             new_review = facade.create_review(review_data)
@@ -96,10 +117,11 @@ class ReviewResource(Resource):
         }, 200
 
     @jwt_required()
-    @api.expect(review_update_model)
+    @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
     @api.response(400, 'Invalid input data')
     @api.response(401, 'Authentication required')
+    @api.response(403, 'Unauthorized action')
     @api.response(404, 'Review not found')
     def put(self, review_id):
         """Update a review."""
@@ -107,6 +129,11 @@ class ReviewResource(Resource):
 
         if not review:
             return {'error': 'Review not found'}, 404
+
+        current_user = get_jwt_identity()
+
+        if review.user_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
 
         review_data = api.payload or {}
 
@@ -129,6 +156,7 @@ class ReviewResource(Resource):
     @jwt_required()
     @api.response(200, 'Review deleted successfully')
     @api.response(401, 'Authentication required')
+    @api.response(403, 'Unauthorized action')
     @api.response(404, 'Review not found')
     def delete(self, review_id):
         """Delete a review."""
@@ -136,6 +164,11 @@ class ReviewResource(Resource):
 
         if not review:
             return {'error': 'Review not found'}, 404
+
+        current_user = get_jwt_identity()
+
+        if review.user_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
 
         facade.delete_review(review_id)
 
