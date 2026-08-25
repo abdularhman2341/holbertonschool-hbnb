@@ -1,3 +1,4 @@
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 
@@ -26,10 +27,6 @@ place_model = api.model('Place', {
         required=True,
         description='Longitude of the place'
     ),
-    'owner_id': fields.String(
-        required=True,
-        description='ID of the owner'
-    ),
     'amenities': fields.List(
         fields.String,
         required=True,
@@ -40,12 +37,16 @@ place_model = api.model('Place', {
 
 @api.route('/')
 class PlaceList(Resource):
+    @jwt_required()
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Authentication required')
     def post(self):
         """Register a new place."""
         place_data = api.payload or {}
+
+        place_data['owner_id'] = get_jwt_identity()
 
         try:
             new_place = facade.create_place(place_data)
@@ -123,17 +124,28 @@ class PlaceResource(Resource):
             ]
         }, 200
 
+    @jwt_required()
     @api.expect(place_model)
     @api.response(200, 'Place updated successfully')
-    @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Authentication required')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
     def put(self, place_id):
         """Update a place's information."""
-        place_data = api.payload or {}
-
         place = facade.get_place(place_id)
+
         if not place:
             return {'error': 'Place not found'}, 404
+
+        current_user = get_jwt_identity()
+
+        if place.owner_id != current_user:
+            return {'error': 'Unauthorized action'}, 403
+
+        place_data = api.payload or {}
+
+        place_data.pop('owner_id', None)
 
         try:
             facade.update_place(place_id, place_data)
